@@ -1,3 +1,5 @@
 logs.txt
 libs/lib_credentials/keepass_manual.pdf
 libs/lib_credentials/prognoZTM.kdbx
+utils/badfiles
+**/__pycache__/
