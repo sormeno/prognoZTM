@@ -2,13 +2,13 @@ logs.txt
 libs/lib_credentials/keepass_manual.pdf
 libs/lib_credentials/prognoZTM.kdbx
 utils/badfiles
-*.pyc
-app.py
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
 *$py.class
+*.pyc
 
 # C extensions
 *.so
