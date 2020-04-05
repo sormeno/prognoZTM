@@ -47,12 +47,13 @@ class DatabaseObjectClient:
             self.DBClient.conn.commit()
             logger.debug(f'COMMIT done')
         except pyodbc.Error:
+            logger.warning(f'Error when trying insert {data} to {self.name} {self.database}.{self.table_name}', exc_info= True)
+            print(f'Error when trying insert to {self.database}.{self.table_name}. Data saved to badfile {self.database}_{self.table_name}_badfile.txt')
             self.DBClient.conn.rollback()
-            logger.error(f'Database connection error when trying insert {data} to {self.name} {self.database}.{self.table_name}', exc_info= True)
-            logger.info(f'Unsaved data loaded to badfile {self.database}_{self.table_name}_badfile.txt')
-            print(f'Database connection error when trying insert to {self.database}.{self.table_name}')
+            logger.debug(f'ROLLBACK done')
             with open(f'utils\\badfiles\\{self.database}_{self.table_name}_badfile.txt','a') as badfile:
-                badfile.write(data)
+                badfile.write(';'.join(str(cell) for cell in data)+'\n')
+            logger.info(f'Unsaved data loaded to badfile {self.database}_{self.table_name}_badfile.txt')
 
 
 
