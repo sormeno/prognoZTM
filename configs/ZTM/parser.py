@@ -45,11 +45,34 @@ def pz1000bus_tram(json_data):
 
 
 def pz2000actual_weather(json_data):
+    #TODO handle not existing attributes
+    nullables = [
+        # json_data['visibility'],
+        # json_data['wind']['speed'],
+        # json_data['wind']['deg'],
+        # json_data['clouds']['all'],
+        # json_data['sys']['sunrise'],
+        # json_data['sys']['sunset']
+    ]
+
+    after_denullization =()
+    for elem in nullables:
+        try:
+            after_denullization += (elem,)
+        except KeyError:
+            after_denullization += (None,)
+            logger.warning(f'Could not found attribute in returned data: {KeyError}. Assigning None.')
+
+
+
     try:
-        wind_deg = json_data['wind']['deg'] if json_data['wind']['deg'] else None
-    except Exception:
+        wind_deg = json_data['wind']['deg']
+    except KeyError:
         wind_deg = None
-        logger.debug(f'Could not extract wind deg value. Assigning None.')
+    try:
+        visibility = json_data['visibility']
+    except KeyError:
+        visibility = None
 
 
     return (
@@ -60,10 +83,10 @@ def pz2000actual_weather(json_data):
         json_data['main']['feels_like'],
         json_data['main']['pressure'],
         json_data['main']['humidity'],
-        json_data['visibility'],
+        visibility,
         json_data['wind']['speed'],
         wind_deg,
         json_data['clouds']['all'],
         json_data['sys']['sunrise'],
         json_data['sys']['sunset']
-    )
+    ) + after_denullization

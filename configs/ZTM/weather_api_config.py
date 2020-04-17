@@ -55,8 +55,8 @@ class ConfigureWeatherAPI:
         while lat < self.lat_max:
             while lon < self.lon_max:
                 measure_points_coordinates.append([
-                    [self.API_ATTRIBUTES['LATITUDE_ATTR_NAME'],lat],
-                    [self.API_ATTRIBUTES['LONGITUDE_ATTR_NAME'],lon]
+                    ['LATITUDE_ATTR_NAME',lat],
+                    ['LONGITUDE_ATTR_NAME',lon]
                 ])
                 logger.info(f'Weather coordinate: lat={lat};lon={lon} added to list.')
                 lon += 0.05

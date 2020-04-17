@@ -2,7 +2,7 @@ import logging
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
     datefmt='%d-%m-%Y %H:%M:%S',
-    level=logging.DEBUG,
+    level=logging.INFO,
     filename='C:\\Users\\filip\\OneDrive\\Dokumenty\\Python Projects\\PrognoZTM\\logs.txt'
     )
 logger = logging.getLogger('PrognoZTM')
@@ -28,8 +28,8 @@ tgt_database = 'MYSQL_DB' #also name of KeePass entry
 tgt_transport_api_table = 'pz1000bus_tram'
 tgt_weather_api_table = 'pz2000actual_weather'
 
-#api params
-raw_params = [
+#Transport api params
+transport_api_params = [
     [
         ['RESOURCE_ID_ATTR_NAME','f2e5503e927d-4ad3-9500-4ab9e55deb59'],
         ['VEHICLE_TYPE_ATTR_NAME','1']
@@ -58,22 +58,6 @@ try:
 except Exception as e:
     logger.error(f'Initing configs failed with {e}', exc_info=True)
     print(f'Initing configs failed with {e}')
-    sys.exit()
-
-#Setup additional API params TODO make it independent on transport api config
-try:
-    transport_api_params = [
-        [
-            [transport_api_config.API_ATTRIBUTES['RESOURCE_ID_ATTR_NAME'], transport_api_config.RESOURCE_ID]
-            ,[transport_api_config.API_ATTRIBUTES['VEHICLE_TYPE_ATTR_NAME'], '1' ]
-        ],
-        [
-            [transport_api_config.API_ATTRIBUTES['RESOURCE_ID_ATTR_NAME'], transport_api_config.RESOURCE_ID]
-            , [transport_api_config.API_ATTRIBUTES['VEHICLE_TYPE_ATTR_NAME'], '2']
-        ]
-    ]
-except KeyError:
-    logger.error(f'Key not found', exc_info=True)
     sys.exit()
 
 #init clients objects

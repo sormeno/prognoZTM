@@ -18,7 +18,8 @@ class LiveDataClient:
         test_api = api_wrap.call_api(
                 self.endpoint,
                 self.api_atrributes['API_ATTR_NAME'],
-                self.api_key
+                self.api_key,
+                self.api_atrributes
             )
         try:
             if test_api[api_config.INVALID_API_KEY_CHECK['label']] == api_config.INVALID_API_KEY_CHECK['result']:
@@ -41,6 +42,7 @@ class LiveDataClient:
                 self.endpoint,
                 self.api_atrributes['API_ATTR_NAME'],
                 self.api_key,
+                self.api_atrributes,
                 params
             )
             logger.debug(f'Data fetched from URL builder. Data type is {data.__class__}')
