@@ -43,7 +43,7 @@ class LiveDataClient:
                 self.api_key,
                 params
             )
-            logger.debug('Data fetched from URL builder.')
+            logger.debug(f'Data fetched from URL builder. Data type is {data.__class__}')
         except KeyError:
             data = json.loads({'No data found or error occured'})
             logger.error('No data found or error occured')

@@ -35,10 +35,9 @@ class DatabaseObjectClient:
 
     def insert_json(self,data):
         logger.debug(f'Parsing json data')
-        for elem in data:
-            parsed = self.parser(elem)
-            logger.debug(f'Parsed data: {parsed}')
-            self.insert(parsed)
+        parsed = self.parser(data)
+        logger.debug(f'Parsed data: {parsed}')
+        self.insert(parsed)
 
     def insert(self,data):
         try:
@@ -55,6 +54,38 @@ class DatabaseObjectClient:
                 badfile.write(';'.join(str(cell) for cell in data)+'\n')
             logger.info(f'Unsaved data loaded to badfile {self.database}_{self.table_name}_badfile.txt')
 
+    def insert_json_bulk(self,data):
+        logger.debug(f'Parsing json data for bulk insert')
+        parsed_list = []
+        for elem in data:
+            logger.debug(f'Parsing {elem}')
+            parsed = self.parser(elem)
+            logger.debug(f'Parsed data: {parsed}')
+            parsed_list.append(parsed)
+        self.insert_bulk(parsed_list)
+
+    def insert_bulk(self,data):                             #works only for MySQL
+        bulk_insert_template = self.insert_template
+        bulk_insert_data = data[0]
+        for elem in data[1:]:
+            bulk_insert_data = bulk_insert_data + elem
+            insert_mask = bulk_insert_template[bulk_insert_template.rfind('\n'):]
+            bulk_insert_template = f'{bulk_insert_template},\n{insert_mask}'
+        try:
+            logger.debug(f'Running bulk insert')
+            self.cursor.execute(bulk_insert_template,bulk_insert_data)
+            logger.debug(f'Bulk insert executed!')
+            self.DBClient.conn.commit()
+            logger.debug(f'COMMIT done')
+        except pyodbc.Error:
+            logger.warning(f'Error when trying bulk insert to {self.name} {self.database}.{self.table_name}', exc_info= True)
+            print(f'Error when trying insert to {self.database}.{self.table_name}. Saving data to badfile {self.database}_{self.table_name}_badfile.txt')
+            self.DBClient.conn.rollback()
+            logger.debug(f'ROLLBACK done')
+            with open(f'utils\\badfiles\\{self.database}_{self.table_name}_badfile.txt','a') as badfile:
+                for elem in data:
+                    badfile.write(';'.join(str(cell) for cell in elem)+'\n')
+            logger.info(f'Rejected data saved to badfile {self.database}_{self.table_name}_badfile.txt')
 
 
 class DatabaseClient:

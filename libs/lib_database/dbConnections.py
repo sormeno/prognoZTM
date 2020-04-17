@@ -51,7 +51,7 @@ class TableInfo:
         for column in self.columns:
             query = f'{query} {column},\n'
         query = query [:-2]
-        query = f'{query}\n) VALUES ('
+        query = f'{query}\n) VALUES \n('
         for column in self.columns:
             query = f'{query} ?,'
         query = query[:-1]

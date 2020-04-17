@@ -60,6 +60,7 @@ class ConfigureWeatherAPI:
                 ])
                 logger.info(f'Weather coordinate: lat={lat};lon={lon} added to list.')
                 lon += 0.05
+            lon = self.lon_min + 0.025
             lat += 0.05
 
         return measure_points_coordinates

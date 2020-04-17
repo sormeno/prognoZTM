@@ -1,6 +1,6 @@
 #tables
 pz1000bus_tram = (
-    "prognoztm",
+    "prognoztm_stage",
     "pz1000bus_tram",
     [
         'LINE',
@@ -11,5 +11,25 @@ pz1000bus_tram = (
         'TIME',
         'LATITUDE',
         'LONGITUDE'
+    ]
+)
+
+pz2000actual_weather = (
+    "prognoztm_stage",
+    "pz2000actual_weather",
+    [
+        'LATITUDE',
+        'LONGITUDE',
+        'DATETIME_UNIX',
+        'TEMPERATURE_K',
+        'WIND_CHILL_TEMP_K',
+        'PRESSURE',
+        'HUMIDITY',
+        'VISIBILITY',
+        'WIND_SPEED_MS',
+        'WIND_DIRECTION_DEG',
+        'CLOUDS_COVERAGE',
+        'SUNRISE_UNIX',
+        'SUNSET_UNIX'
     ]
 )
