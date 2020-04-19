@@ -52,7 +52,7 @@ class DatabaseObjectClient:
             logger.debug(f'ROLLBACK done')
             with open(f'utils\\badfiles\\{self.database}_{self.table_name}_badfile.txt','a') as badfile:
                 badfile.write(';'.join(str(cell) for cell in data)+'\n')
-            logger.info(f'Unsaved data loaded to badfile {self.database}_{self.table_name}_badfile.txt')
+            logger.info(f'Unsaved data loaded to badfile {self.database}_{self.table_name}_badfile.txt \n')
 
     def insert_json_bulk(self,data):
         logger.debug(f'Parsing json data for bulk insert')

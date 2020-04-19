@@ -2,6 +2,8 @@ logs.txt
 libs/lib_credentials/keepass_manual.pdf
 libs/lib_credentials/prognoZTM.kdbx
 utils/badfiles
+.idea/workspace.xml
+.idea/
 
 
 # Byte-compiled / optimized / DLL files

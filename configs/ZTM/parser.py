@@ -33,60 +33,30 @@ def pz1000bus_tram(json_data):
     except Exception as e:
         logger.warning(f'Parsing failed with error {e}. Error message:', exc_info = True)
         return (
-            json_data['Lines'],
-            json_data['Brigade'],
-            json_data['VehicleNumber'],
+            json_data.get('Lines', None),
+            json_data.get('Brigade', None),
+            json_data.get('VehicleNumber', None),
             None,
-            json_data['Time'],
+            json_data.get('Time', None),
             None,
-            json_data['Lat'],
-            json_data['Lon']
+            json_data.get('Lat', None),
+            json_data.get('Lon', None)
         )
 
 
 def pz2000actual_weather(json_data):
-    #TODO handle not existing attributes
-    nullables = [
-        # json_data['visibility'],
-        # json_data['wind']['speed'],
-        # json_data['wind']['deg'],
-        # json_data['clouds']['all'],
-        # json_data['sys']['sunrise'],
-        # json_data['sys']['sunset']
-    ]
-
-    after_denullization =()
-    for elem in nullables:
-        try:
-            after_denullization += (elem,)
-        except KeyError:
-            after_denullization += (None,)
-            logger.warning(f'Could not found attribute in returned data: {KeyError}. Assigning None.')
-
-
-
-    try:
-        wind_deg = json_data['wind']['deg']
-    except KeyError:
-        wind_deg = None
-    try:
-        visibility = json_data['visibility']
-    except KeyError:
-        visibility = None
-
-
     return (
-        json_data['coord']['lat'],
-        json_data['coord']['lon'],
-        json_data['dt'],
-        json_data['main']['temp'],
-        json_data['main']['feels_like'],
-        json_data['main']['pressure'],
-        json_data['main']['humidity'],
-        visibility,
-        json_data['wind']['speed'],
-        wind_deg,
-        json_data['clouds']['all'],
-        json_data['sys']['sunrise'],
-        json_data['sys']['sunset']
-    ) + after_denullization
+        json_data.get('coord', {}).get('lat', None),
+        json_data.get('coord', {}).get('lon', None),
+        json_data.get('dt', None),
+        json_data.get('main', {}).get('temp', None),
+        json_data.get('main', {}).get('feels_like', None),
+        json_data.get('main', {}).get('pressure', None),
+        json_data.get('main', {}).get('humidity', None),
+        json_data.get('visibility', None),
+        json_data.get('wind', {}).get('speed', None),
+        json_data.get('wind', {}).get('deg', None),
+        json_data.get('clouds', {}).get('all', None),
+        json_data.get('sys', {}).get('sunrise', None),
+        json_data.get('sys', {}).get('sunset', None)
+    )

@@ -8,6 +8,7 @@ logging.basicConfig(
 logger = logging.getLogger('PrognoZTM')
 logger.info('Started logging!')
 
+import time
 import sys
 import libs.lib_credentials.credentials as cred
 import libs.lib_api.api_client as api
@@ -18,8 +19,9 @@ import importlib
 # import libs.weather as wthr
 # import libs.dzem as dzem
 
-
+start = time.time()
 kp = cred.PassDB(input('KDBX masterpass: '))
+logger.info(f'Opening pass database took {time.time() - start}')
 
 #Setup data sources and targets
 transport_operator = 'ZTM' #also name of KeePass entry
@@ -68,12 +70,23 @@ weather_api_table_client = db_clients.DatabaseObjectClient(kp, tgt_database, db_
 
 # program execution
 for param in transport_api_params:
+    start = time.time()
     transport_data = transport_api_client.get_data(param)[transport_api_config.JSON_RESULT_LABEL]
-    transport_api_table_client.insert_json_bulk(transport_data)
+    logger.info(f'Getting transport data took {time.time() - start}')
+
+    start = time.time()
+    for elem in transport_data:
+        transport_api_table_client.insert_json(elem)
+    logger.info(f'Inserting transport data took {time.time() - start}')
 
 weather_data=[]
+start = time.time()
 for measure_point in weather_api_config.measure_points_coordinates:
     weather_data.append(weather_api_client.get_data(measure_point))
+logger.info(f'Getting weather data took {time.time() - start}')
+
+start = time.time()
 weather_api_table_client.insert_json_bulk(weather_data)
+logger.info(f'Inserting weather data took {time.time() - start}')
 
 logger.info('Program finished!')
