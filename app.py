@@ -13,16 +13,17 @@ import sys
 import libs.lib_credentials.credentials as cred
 import libs.lib_api.api_client as api
 from libs.lib_database import db_clients, dbc
+from libs.lib_screenshots import screen_analyzer
+
 import importlib
 
 # import libs.meteo as meteo
-# import libs.weather as wthr
 # import libs.dzem as dzem
 
 start = time.time()
 kp = cred.PassDB(input('KDBX masterpass: '))
 logger.info(f'Opening pass database took {time.time() - start}')
-
+################################# USER INPUT CONFIGS
 #Setup data sources and targets
 transport_operator = 'ZTM' #also name of KeePass entry
 weather_provider = 'OPEN_WEATHER'
@@ -42,11 +43,14 @@ transport_api_params = [
     ]
 ]
 
+################################# GENERATING CONFIGS
 #import configs
 try:
     api_configs = importlib.import_module(f'configs.{transport_operator}')
     transport_api_config = api_configs.transport_api_config.ConfigureTransportAPI()
     weather_api_config = api_configs.weather_api_config.ConfigureWeatherAPI()
+    maps_config = api_configs.maps_config.ConfigureMaps()  #todo create configure map class
+    from configs.screenshots.selenium_config import selenium_config
 
     db_config = getattr(importlib.import_module(f'configs.databases.database_config'), f'{tgt_database}')
     tgt_transport_table_meta = getattr(importlib.import_module(f'configs.databases.tables_config'), f'{tgt_transport_api_table}')
@@ -67,8 +71,11 @@ transport_api_client = api.LiveDataClient(kp, transport_operator, transport_api_
 transport_api_table_client = db_clients.DatabaseObjectClient(kp, tgt_database, db_config, tgt_transport_table_config)
 weather_api_client = api.LiveDataClient(kp, weather_provider, weather_api_config)
 weather_api_table_client = db_clients.DatabaseObjectClient(kp, tgt_database, db_config, tgt_weather_table_config)
+maps_client = screen_analyzer.ScreenAnalyzer(selenium_config)
+#maps_table_client
 
-# program execution
+################################# PROGRAM EXECUTION
+#transport data
 for param in transport_api_params:
     start = time.time()
     transport_data = transport_api_client.get_data(param)[transport_api_config.JSON_RESULT_LABEL]
@@ -79,6 +86,7 @@ for param in transport_api_params:
         transport_api_table_client.insert_json(elem)
     logger.info(f'Inserting transport data took {time.time() - start}')
 
+#weather data
 weather_data=[]
 start = time.time()
 for measure_point in weather_api_config.measure_points_coordinates:
@@ -88,5 +96,12 @@ logger.info(f'Getting weather data took {time.time() - start}')
 start = time.time()
 weather_api_table_client.insert_json_bulk(weather_data)
 logger.info(f'Inserting weather data took {time.time() - start}')
+
+#dzem
+#todo add logging
+for elem in maps_config.urls:
+    single_screen = maps_client.get_screen(elem)
+    single_screen.show()
+
 
 logger.info('Program finished!')

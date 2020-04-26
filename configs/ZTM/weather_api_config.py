@@ -30,7 +30,7 @@ class ConfigureWeatherAPI:
         self.measure_points_coordinates = self.get_weather_coordinates()
         # Optional constants
         #None
-
+    #todo move to separate file
     def get_weather_coordinates(self):
 
         try:
