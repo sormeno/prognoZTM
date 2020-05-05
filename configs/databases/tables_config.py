@@ -33,3 +33,16 @@ pz2000actual_weather = (
         'SUNSET_UNIX'
     ]
 )
+
+
+pz3000traffic_data = (
+    "prognoztm_stage",
+    "pz3000traffic_data",
+    [
+        'TIMESTAMP',
+        'LABEL',
+        'COLOR',
+        'COLOR_VALUES',
+        'COUNT'
+    ]
+)

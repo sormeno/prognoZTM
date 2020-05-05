@@ -60,3 +60,13 @@ def pz2000actual_weather(json_data):
         json_data.get('sys', {}).get('sunrise', None),
         json_data.get('sys', {}).get('sunset', None)
     )
+
+
+def pz3000traffic_data(json_data):
+    return (
+        json_data.get('timestamp', None),
+        json_data.get('label', None),
+        json_data.get('color', None),
+        json_data.get('pix_values', None),
+        json_data.get('count', None)
+    )

@@ -9,7 +9,8 @@ import base64
 class ScreenCollector:
 
     def __init__(self, config):
-        self.driver = webdriver.Chrome(options=self.options(config), executable_path="C:\\chromedriver\\chromedriver.exe")
+        self.driver = webdriver.Chrome(options=self.options(config.get('config')),
+                                       executable_path=config.get('browser_driver'))
 
 
     def options(self, config):
@@ -22,4 +23,5 @@ class ScreenCollector:
     def get_screen(self, url):
         self.driver.get(url)
         screen = self.driver.get_screenshot_as_base64()
-        return Image.open(BytesIO(base64.b64decode(screen)))
+        self.screen = Image.open(BytesIO(base64.b64decode(screen)))
+        return self

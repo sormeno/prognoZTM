@@ -10,6 +10,7 @@ logger.info('Started logging!')
 
 import time
 import sys
+from datetime import datetime
 import libs.lib_credentials.credentials as cred
 import libs.lib_api.api_client as api
 from libs.lib_database import db_clients, dbc
@@ -30,6 +31,7 @@ weather_provider = 'OPEN_WEATHER'
 tgt_database = 'MYSQL_DB' #also name of KeePass entry
 tgt_transport_api_table = 'pz1000bus_tram'
 tgt_weather_api_table = 'pz2000actual_weather'
+tgt_maps_table = 'pz3000traffic_data'
 
 #Transport api params
 transport_api_params = [
@@ -51,6 +53,7 @@ try:
     weather_api_config = api_configs.weather_api_config.ConfigureWeatherAPI()
     maps_config = api_configs.maps_config.ConfigureMaps()  #todo create configure map class
     from configs.screenshots.selenium_config import selenium_config
+    from configs.screenshots.screenshot_config import screen_analyzer_config
 
     db_config = getattr(importlib.import_module(f'configs.databases.database_config'), f'{tgt_database}')
     tgt_transport_table_meta = getattr(importlib.import_module(f'configs.databases.tables_config'), f'{tgt_transport_api_table}')
@@ -60,6 +63,10 @@ try:
     tgt_weather_table_meta = getattr(importlib.import_module(f'configs.databases.tables_config'), f'{tgt_weather_api_table}')
     tgt_weather_table_parser = getattr(importlib.import_module(f'configs.{transport_operator}.parser') ,f'{tgt_weather_api_table}')
     tgt_weather_table_config = dbc.TableInfo(*tgt_weather_table_meta, tgt_weather_table_parser)
+
+    tgt_maps_table_meta = getattr(importlib.import_module(f'configs.databases.tables_config'), f'{tgt_maps_table}')
+    tgt_maps_table_parser = getattr(importlib.import_module(f'configs.{transport_operator}.parser') ,f'{tgt_maps_table}')
+    tgt_maps_table_config = dbc.TableInfo(*tgt_maps_table_meta, tgt_maps_table_parser)
 
 except Exception as e:
     logger.error(f'Initing configs failed with {e}', exc_info=True)
@@ -71,8 +78,8 @@ transport_api_client = api.LiveDataClient(kp, transport_operator, transport_api_
 transport_api_table_client = db_clients.DatabaseObjectClient(kp, tgt_database, db_config, tgt_transport_table_config)
 weather_api_client = api.LiveDataClient(kp, weather_provider, weather_api_config)
 weather_api_table_client = db_clients.DatabaseObjectClient(kp, tgt_database, db_config, tgt_weather_table_config)
-maps_client = screen_analyzer.ScreenAnalyzer(selenium_config)
-#maps_table_client
+maps_client = screen_analyzer.ScreenAnalyzer(selenium_config, screen_analyzer_config)
+maps_table_client  = db_clients.DatabaseObjectClient(kp, tgt_database, db_config, tgt_maps_table_config)
 
 ################################# PROGRAM EXECUTION
 #transport data
@@ -99,9 +106,11 @@ logger.info(f'Inserting weather data took {time.time() - start}')
 
 #dzem
 #todo add logging
-for elem in maps_config.urls:
-    single_screen = maps_client.get_screen(elem)
-    single_screen.show()
+start = time.time()
+for elem, place in zip(maps_config.urls, maps_config.places):
+    traffic_data = maps_client.get_screen(elem).get_image_pixels(place, datetime.now())
+    maps_table_client.insert_json_bulk(traffic_data)
+logger.info(f'Gathering traffic data took {time.time() - start}')
 
 
 logger.info('Program finished!')

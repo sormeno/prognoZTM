@@ -22,12 +22,14 @@ class ConfigureMaps:
         self.params = '!5m1!1e1'
 
         self.urls = []
+        self.places = []
         for elem in raw_map_params:
             self.urls.append(self.url_generator(
                 elem.get('place'),
                 elem.get('lat'),
                 elem.get('lon')
             ))
+            self.places.append(elem.get('place'))
 
     def url_generator(self, place, lat, lon):
         return f'{self.source}{place}/@{lat},{lon},{self.zoom}/data={self.params}'
