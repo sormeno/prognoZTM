@@ -15,6 +15,9 @@ General goal of the project is to find public transport bottlenecks in any city.
 - gather weather data through Web API (from any provider)
 - gather traffic data using Selenium and image analysis
 - write data to any database
+- in case of failure save unwritten data to badfile
+- error handling to provide continous running
+- loggig for errors and warnings analysis 
 - easy extendable with other APIs and database tables
 - keep credentials in save KeePass database
 
