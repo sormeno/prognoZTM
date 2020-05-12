@@ -12,6 +12,7 @@ import time
 import sys
 from datetime import datetime
 import importlib
+import threading
 
 
 
@@ -23,6 +24,10 @@ tgt_database = 'MYSQL_DB' #also alias for KeePass entry in KeePass_config.py
 tgt_transport_api_table = 'pz1000bus_tram'
 tgt_weather_api_table = 'pz2000actual_weather'
 tgt_maps_table = 'pz3000traffic_data'
+
+transport_data_get_interval = 30
+weather_data_get_interval = 1800
+traffic_data_get_interval = 1800
 
 #Transport api params
 transport_api_params = [
@@ -81,35 +86,83 @@ weather_api_table_client = db_clients.DatabaseObjectClient(kp, tgt_database, db_
 maps_client = screen_analyzer.ScreenAnalyzer(selenium_config, screen_analyzer_config)
 maps_table_client  = db_clients.DatabaseObjectClient(kp, tgt_database, db_config, tgt_maps_table_config)
 
-################################# PROGRAM EXECUTION
+################################# PROGRAM EXECUTION #todo create separate file for continous functions
 #transport data
-for param in transport_api_params:
-    start = time.time()
-    transport_data = transport_api_client.get_data(param)[transport_api_config.JSON_RESULT_LABEL]
-    logger.info(f'Getting transport data took {time.time() - start}')
+def transport_data_get_continously(stop_event,):
+    while not stop_event.wait(1):
+        for param in transport_api_params:
+            start = time.time()
+            transport_data = transport_api_client.get_data(param)[transport_api_config.JSON_RESULT_LABEL]
+            logger.info(f'Getting transport data took {time.time() - start}')
 
-    start = time.time()
-    for elem in transport_data:
-        transport_api_table_client.insert_json(elem)
-    logger.info(f'Inserting transport data took {time.time() - start}')
+            start = time.time()
+            for elem in transport_data:
+                transport_api_table_client.insert_json(elem)
+            logger.info(f'Inserting transport data took {time.time() - start}')
+            logger.info(f'Transport thread going sleep for {transport_data_get_interval} seconds.')
+            time.sleep(transport_data_get_interval)
+            logger.info(f'Transport thread wakes up.')
+    logger.info(f'Finishing collecting transport data on user request.')
+    print(f'Finishing collecting transport data on user request.')
 
 #weather data
-weather_data=[]
-start = time.time()
-for measure_point in weather_api_config.measure_points_coordinates:
-    weather_data.append(weather_api_client.get_data(measure_point))
-logger.info(f'Getting weather data took {time.time() - start}')
+def weather_data_get_continously(stop_event,):
+    while not stop_event.wait(1):
+        weather_data=[]
+        start = time.time()
+        for measure_point in weather_api_config.measure_points_coordinates:
+            weather_data.append(weather_api_client.get_data(measure_point))
+        logger.info(f'Getting weather data took {time.time() - start}')
 
-start = time.time()
-weather_api_table_client.insert_json_bulk(weather_data)
-logger.info(f'Inserting weather data took {time.time() - start}')
+        start = time.time()
+        weather_api_table_client.insert_json_bulk(weather_data)
+        logger.info(f'Inserting weather data took {time.time() - start}')
+        logger.info(f'Weather thread going sleep for {weather_data_get_interval} seconds.')
+        time.sleep(weather_data_get_interval)
+        logger.info(f'Weather thread wakes up.')
+    logger.info(f'Finishing collecting weather data on user request.')
+    print(f'Finishing collecting weather data on user request.')
 
 #traffic
-start = time.time()
-for elem, place in zip(maps_config.urls, maps_config.places):
-    traffic_data = maps_client.get_screen(elem).get_image_pixels(place, datetime.now())
-    maps_table_client.insert_json_bulk(traffic_data)
-logger.info(f'Gathering traffic data took {time.time() - start}')
+def traffic_data_get_continously(stop_event,):
+    while not stop_event.wait(1):
+        start = time.time()
+        for elem, place in zip(maps_config.urls, maps_config.places):
+            traffic_data = maps_client.get_screen(elem).get_image_pixels(place, datetime.now())
+            maps_table_client.insert_json_bulk(traffic_data)
+        logger.info(f'Gathering traffic data took {time.time() - start}')
+        logger.info(f'Traffic thread going sleep for {traffic_data_get_interval} seconds.')
+        time.sleep(traffic_data_get_interval)
+        logger.info(f'Traffic thread wakes up.')
+    logger.info(f'Finishing collecting traffic data on user request.')
+    print(f'Finishing collecting traffic data on user request.')
 
+def user_end(stop_event,):
+    while not stop_event.wait(1):
+        if input('Type EXIT to end program execution:') == 'EXIT':
+            logger.info('User requested to stop execution')
+            pill2kill.set()
+    print('Finishing program.')
+    logger.info('Finishing program.')
+
+
+pill2kill = threading.Event()
+tasks = [transport_data_get_continously,
+         weather_data_get_continously,
+         traffic_data_get_continously,
+         user_end]
+
+def thread_gen(pill2kill, tasks):
+    for task in tasks:
+        t = threading.Thread(target=task, args=(pill2kill,))
+        yield t
+
+threads = list(thread_gen(pill2kill, tasks))
+
+for thread in threads:
+    thread.start()
+
+for thread in threads:
+    thread.join()
 
 logger.info('Program finished!')
