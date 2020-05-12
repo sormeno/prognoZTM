@@ -11,24 +11,15 @@ logger.info('Started logging!')
 import time
 import sys
 from datetime import datetime
-import libs.lib_credentials.credentials as cred
-import libs.lib_api.api_client as api
-from libs.lib_database import db_clients, dbc
-from libs.lib_screenshots import screen_analyzer
-
 import importlib
 
-# import libs.meteo as meteo
-# import libs.dzem as dzem
 
-start = time.time()
-kp = cred.PassDB(input('KDBX masterpass: '))
-logger.info(f'Opening pass database took {time.time() - start}')
+
 ################################# USER INPUT CONFIGS
 #Setup data sources and targets
-transport_operator = 'ZTM' #also name of KeePass entry
-weather_provider = 'OPEN_WEATHER'
-tgt_database = 'MYSQL_DB' #also name of KeePass entry
+transport_operator = 'ZTM' #also alias for KeePass entry in KeePass_config.py
+weather_provider = 'OPEN_WEATHER' #also alias for KeePass entry in KeePass_config.py
+tgt_database = 'MYSQL_DB' #also alias for KeePass entry in KeePass_config.py
 tgt_transport_api_table = 'pz1000bus_tram'
 tgt_weather_api_table = 'pz2000actual_weather'
 tgt_maps_table = 'pz3000traffic_data'
@@ -48,10 +39,19 @@ transport_api_params = [
 ################################# GENERATING CONFIGS
 #import configs
 try:
+    import libs.lib_credentials.credentials as cred
+    import libs.lib_api.api_client as api
+    from libs.lib_database import db_clients, dbc
+    from libs.lib_screenshots import screen_analyzer
+
+    start = time.time()
+    kp = cred.PassDB(input('KDBX masterpass: '))
+    logger.info(f'Opening pass database took {time.time() - start}')
     api_configs = importlib.import_module(f'configs.{transport_operator}')
+
     transport_api_config = api_configs.transport_api_config.ConfigureTransportAPI()
     weather_api_config = api_configs.weather_api_config.ConfigureWeatherAPI()
-    maps_config = api_configs.maps_config.ConfigureMaps()  #todo create configure map class
+    maps_config = api_configs.maps_config.ConfigureMaps()
     from configs.screenshots.selenium_config import selenium_config
     from configs.screenshots.screenshot_config import screen_analyzer_config
 
@@ -104,8 +104,7 @@ start = time.time()
 weather_api_table_client.insert_json_bulk(weather_data)
 logger.info(f'Inserting weather data took {time.time() - start}')
 
-#dzem
-#todo add logging
+#traffic
 start = time.time()
 for elem, place in zip(maps_config.urls, maps_config.places):
     traffic_data = maps_client.get_screen(elem).get_image_pixels(place, datetime.now())

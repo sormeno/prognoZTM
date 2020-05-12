@@ -1,5 +1,6 @@
 #ZTM Warsaw config
-#todo add logging
+import logging
+logger = logging.getLogger('prognoZTM.collect_screenshot')
 
 raw_map_params = [
     {
@@ -24,14 +25,17 @@ class ConfigureMaps:
         self.urls = []
         self.places = []
         for elem in raw_map_params:
+            logger.info(f'Building URL for {elem.get("place")} and coordinates lat={elem.get("lat")}, lon={elem.get("lon")}')
             self.urls.append(self.url_generator(
                 elem.get('place'),
                 elem.get('lat'),
                 elem.get('lon')
             ))
+            logger.info(f'Appending places list with {elem.get("place")}')
             self.places.append(elem.get('place'))
 
     def url_generator(self, place, lat, lon):
+        logger.info(f'Following URL for map screenshot built: {self.source}{place}/@{lat},{lon},{self.zoom}/data={self.params}')
         return f'{self.source}{place}/@{lat},{lon},{self.zoom}/data={self.params}'
 
 
