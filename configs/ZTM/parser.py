@@ -31,17 +31,30 @@ def pz1000bus_tram(json_data):
         )
 
     except Exception as e:
-        logger.warning(f'Parsing failed with error {e}. Error message:', exc_info = True)
-        return (
-            json_data.get('Lines', None),
-            json_data.get('Brigade', None),
-            json_data.get('VehicleNumber', None),
-            None,
-            json_data.get('Time', None),
-            None,
-            json_data.get('Lat', None),
-            json_data.get('Lon', None)
-        )
+        try:
+            logger.warning(f'Parsing failed with error {e}. Error message:', exc_info = True)
+            return (
+                json_data.get('Lines', None),
+                json_data.get('Brigade', None),
+                json_data.get('VehicleNumber', None),
+                None,
+                json_data.get('Time', None),
+                None,
+                json_data.get('Lat', None),
+                json_data.get('Lon', None)
+            )
+        except:
+            logger.warning(f'Data failed to be parsed:\n {json_data}')
+            return (
+                json_data,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None,
+                None
+            )
 
 
 def pz2000actual_weather(json_data):

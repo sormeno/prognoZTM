@@ -25,7 +25,7 @@ tgt_transport_api_table = 'pz1000bus_tram'
 tgt_weather_api_table = 'pz2000actual_weather'
 tgt_maps_table = 'pz3000traffic_data'
 
-transport_data_get_interval = 30
+transport_data_get_interval = 10
 weather_data_get_interval = 1800
 traffic_data_get_interval = 1800
 
@@ -90,6 +90,7 @@ maps_table_client  = db_clients.DatabaseObjectClient(kp, tgt_database, db_config
 #transport data
 def transport_data_get_continously(stop_event,):
     while not stop_event.wait(1):
+        thread_start = time.time()
         for param in transport_api_params:
             start = time.time()
             transport_data = transport_api_client.get_data(param)[transport_api_config.JSON_RESULT_LABEL]
@@ -98,10 +99,11 @@ def transport_data_get_continously(stop_event,):
             start = time.time()
             for elem in transport_data:
                 transport_api_table_client.insert_json(elem)
-            logger.info(f'Inserting transport data took {time.time() - start}')
-            logger.info(f'Transport thread going sleep for {transport_data_get_interval} seconds.')
-            time.sleep(transport_data_get_interval)
-            logger.info(f'Transport thread wakes up.')
+            logger.info(f'Inserted {len(transport_data)} rows with transport data.Inserting took {time.time() - start}')
+        logger.info(f'Transport thread going sleep for {transport_data_get_interval - (time.time() - thread_start)} seconds.')
+        thread_time = (time.time() - thread_start) if transport_data_get_interval - (time.time() - thread_start) > 0 else 10
+        time.sleep(transport_data_get_interval - thread_time)
+        logger.info(f'Transport thread wakes up.')
     logger.info(f'Finishing collecting transport data on user request.')
     print(f'Finishing collecting transport data on user request.')
 
@@ -148,8 +150,8 @@ def user_end(stop_event,):
 
 pill2kill = threading.Event()
 tasks = [transport_data_get_continously,
-         weather_data_get_continously,
-         traffic_data_get_continously,
+         #weather_data_get_continously,
+         #traffic_data_get_continously,
          user_end]
 
 def thread_gen(pill2kill, tasks):
