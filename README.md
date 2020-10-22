@@ -6,7 +6,7 @@ General goal of the project is to find public transport bottlenecks in any city.
 ##### Project has got 3 main parts:
 - gathering live data (using Python)
 - storing and processing gathered data (in MySQl database)
-- display processed data (using Django)
+- display processed data (using Django) #TODO
 
 
 
