@@ -1,6 +1,5 @@
 # prognoZTM
 
-#### prognoZTM is demo project for recruitment purposes. It hasn't got any commercial uses.
 
 General goal of the project is to find public transport bottlenecks in any city.
 ##### Project has got 3 main parts:
