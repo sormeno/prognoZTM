@@ -3,7 +3,8 @@ class Titles:
         'MYSQL_DB' : 'mysql_write',
         'ZTM' : 'ztm_api_key',
         'OPEN_WEATHER' : 'open_weather_api_key',
-        'MYSQL_DUMP' : 'mysql_db_dump'
+        'MYSQL_DUMP' : 'mysql_db_dump',
+        'GIT' : 'git_user'
     }
 
 
