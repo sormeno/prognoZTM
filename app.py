@@ -3,7 +3,7 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
     datefmt='%d-%m-%Y %H:%M:%S',
     level=logging.INFO,
-    filename='C:\\Users\\filip\\OneDrive\\Dokumenty\\Python Projects\\PrognoZTM\\logs.txt'
+    filename='C:\\Users\\filip\\OneDrive\\Dokumenty\\Programowanie\\Python Projects\\PrognoZTM\\logs.txt'
     )
 logger = logging.getLogger('PrognoZTM')
 logger.info('Started logging!')
@@ -25,9 +25,9 @@ tgt_transport_api_table = 'pz1000bus_tram'
 tgt_weather_api_table = 'pz2000actual_weather'
 tgt_maps_table = 'pz3000traffic_data'
 
-transport_data_get_interval = 10
-weather_data_get_interval = 1800
-traffic_data_get_interval = 1800
+transport_data_get_interval = 30
+weather_data_get_interval = 30
+traffic_data_get_interval = 30
 
 #Transport api params
 transport_api_params = [
@@ -50,7 +50,7 @@ try:
     from libs.lib_screenshots import screen_analyzer
 
     start = time.time()
-    kp = cred.PassDB(input('KDBX masterpass: '))
+    kp = cred.JSONpassDB()
     logger.info(f'Opening pass database took {time.time() - start}')
     api_configs = importlib.import_module(f'configs.{transport_operator}')
 
@@ -117,10 +117,12 @@ def weather_data_get_continously(stop_event,):
         logger.info(f'Getting weather data took {time.time() - start}')
 
         start = time.time()
-        weather_api_table_client.insert_json_bulk(weather_data)
+        for elem in (weather_data):
+            weather_api_table_client.insert_json(elem) #_bulk off #TODO fix bulk insert
         logger.info(f'Inserting weather data took {time.time() - start}')
         logger.info(f'Weather thread going sleep for {weather_data_get_interval} seconds.')
-        time.sleep(weather_data_get_interval)
+        for i in range(int(weather_data_get_interval/10)):
+            time.sleep(10)
         logger.info(f'Weather thread wakes up.')
     logger.info(f'Finishing collecting weather data on user request.')
     print(f'Finishing collecting weather data on user request.')
@@ -134,7 +136,8 @@ def traffic_data_get_continously(stop_event,):
             maps_table_client.insert_json_bulk(traffic_data)
         logger.info(f'Gathering traffic data took {time.time() - start}')
         logger.info(f'Traffic thread going sleep for {traffic_data_get_interval} seconds.')
-        time.sleep(traffic_data_get_interval)
+        for i in range(int(traffic_data_get_interval/10)):
+            time.sleep(10)
         logger.info(f'Traffic thread wakes up.')
     logger.info(f'Finishing collecting traffic data on user request.')
     print(f'Finishing collecting traffic data on user request.')
@@ -150,8 +153,8 @@ def user_end(stop_event,):
 
 pill2kill = threading.Event()
 tasks = [transport_data_get_continously,
-         #weather_data_get_continously,
-         #traffic_data_get_continously,
+         weather_data_get_continously,
+         traffic_data_get_continously,
          user_end]
 
 def thread_gen(pill2kill, tasks):

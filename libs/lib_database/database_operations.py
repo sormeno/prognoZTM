@@ -76,6 +76,8 @@ class DatabaseObjectClient:
             bulk_insert_template = f'{bulk_insert_template},\n{insert_mask}'
         try:
             logger.debug(f'Running bulk insert')
+            logger.debug(f'bulk_insert_template:\n{bulk_insert_template}')
+            logger.debug(f'bulk_insert_data:\n{bulk_insert_data}')
             self.cursor.execute(bulk_insert_template,bulk_insert_data)
             logger.debug(f'Bulk insert executed!')
             self.DBClient.conn.commit()

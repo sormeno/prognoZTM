@@ -5,10 +5,9 @@ pz1000bus_tram = (
     [
         'LINE',
         'BRIGADE',
-        'VEHICLE_1',
-        'VEHICLE_2',
-        'DATE',
-        'TIME',
+        'VEHICLE',
+        'DATE_API',
+        'DATE_COLLECTED',
         'LATITUDE',
         'LONGITUDE'
     ]

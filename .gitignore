@@ -1,6 +1,9 @@
 logs.txt
-libs/lib_credentials/keepass_manual.pdf
+db_backup/db_backup_config.py
+libs/lib_credentials/access.json
 libs/lib_credentials/prognoZTM.kdbx
+libs/lib_credentials/keepass_manual.pdf
+libs/lib_credentials/prognoZTM_v2.kdbx
 utils/badfiles
 .idea/workspace.xml
 .idea/

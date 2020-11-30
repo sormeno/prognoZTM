@@ -1,12 +1,13 @@
 from pykeepass import PyKeePass
 from pykeepass import exceptions
+import json
 import sys
 import logging
-from configs.KeePass_config import Titles as tt, KPpath
+from configs.passwords_config import Titles as tt, KPpath, JSONpasspath
 
 logger = logging.getLogger('PrognoZTM.credntials')
 
-class PassDB:
+class KeepassDB: #class for keepass file
 
     def __init__(self, masterpass):
         logger.info('Requesting KeePass database data')
@@ -31,4 +32,30 @@ class PassDB:
         except KeyError:
             logger.error(f'{credential_name} not found in {KPpath.PATH}. Please provide correct name of entry.')
             print(f'{credential_name} not found in {KPpath.PATH}. Please provide correct name of entry.')
+            sys.exit()
+
+
+class JSONpassDB: #class for simple .json file
+
+    def __init__(self, cred_path = JSONpasspath.PATH):
+        logger.info('Loading credentials JSON')
+        try:
+            self.cred_path = cred_path
+            with open(cred_path, 'r') as json_file:
+                self.kp = json.load(json_file)
+            logger.info('Credentials database fetched')
+        except FileNotFoundError:
+            logger.error(f'JSON file {cred_path} does not exist')
+            print(f'JSON file {cred_path} does not exist')
+            sys.exit()
+
+    def get_credential(self,credential_name):
+        logger.debug(f'Requesting {credential_name} credentials')
+        try:
+            entry = self.kp.get(tt.names[credential_name])
+            logger.debug(f'{credential_name} credentials found')
+            return entry.get('username'), entry.get('password')
+        except KeyError:
+            logger.error(f'{credential_name} not found in {self.cred_path}. Please provide correct name of entry.')
+            print(f'{credential_name} not found in {self.cred_path}. Please provide correct name of entry.')
             sys.exit()

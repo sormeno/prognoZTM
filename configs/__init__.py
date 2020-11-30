@@ -1,1 +1,1 @@
-import configs.KeePass_config as KP_config
+import configs.passwords_config as KP_config

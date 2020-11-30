@@ -1,60 +1,20 @@
 #ZTM Parsers
 import logging
+from datetime import datetime
 
 logger = logging.getLogger("PrognoZTM.ZTM_parser")
 
 def pz1000bus_tram(json_data):
-    try:
-        line = json_data['Lines'].replace('-','000').replace('L','99901').replace('Z','99902').replace('E','99903').replace('N','99904')
-        if '+' in json_data['VehicleNumber']:
-            vehicle_1,vehicle_2 = json_data['VehicleNumber'].split('+')
-        else:
-            vehicle_1 = json_data['VehicleNumber']
-            vehicle_2 = None
+    return (
+        json_data.get('Lines', None),
+        json_data.get('Brigade', None),
+        json_data.get('VehicleNumber', None),
+        json_data.get('Time', None),
+        datetime.now(),
+        json_data.get('Lat', None),
+        json_data.get('Lon', None)
+    )
 
-        logger.debug(f'Values extracted from API fields: line={line}')
-        logger.debug(f'Values extracted from API fields: vehicle_1={vehicle_1} and vehicle_2={vehicle_2}')
-
-        date, time = json_data['Time'].split(' ')
-        date.replace('-','')
-        logger.debug(f'Values extracted from API fields: date={date} and time={time}')
-
-        return (
-            int(line),
-            int(json_data['Brigade']),
-            int(vehicle_1),
-            int(vehicle_2) if vehicle_2 else None,
-            int(date.replace('-','')),
-            time,
-            json_data['Lat'],
-            json_data['Lon']
-        )
-
-    except Exception as e:
-        try:
-            logger.warning(f'Parsing failed with error {e}. Error message:', exc_info = True)
-            return (
-                json_data.get('Lines', None),
-                json_data.get('Brigade', None),
-                json_data.get('VehicleNumber', None),
-                None,
-                json_data.get('Time', None),
-                None,
-                json_data.get('Lat', None),
-                json_data.get('Lon', None)
-            )
-        except:
-            logger.warning(f'Data failed to be parsed:\n {json_data}')
-            return (
-                json_data,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None,
-                None
-            )
 
 
 def pz2000actual_weather(json_data):
