@@ -46,40 +46,14 @@ try:
 
     kp = cred.JSONpassDB()
     api_configs = importlib.import_module(f'configs.{transport_operator}')
-
-    # transport_api_config = api_configs.transport_api_config.ConfigureTransportAPI()
-    # weather_api_config = api_configs.weather_api_config.ConfigureWeatherAPI()
-    # maps_config = api_configs.maps_config.ConfigureMaps()
-    # from configs.screenshots.selenium_config import selenium_config
-    # from configs.screenshots.screenshot_config import screen_analyzer_config
-    #
     db_config = getattr(importlib.import_module(f'configs.databases.database_config'), f'{tgt_database}')
-    # tgt_transport_table_meta = getattr(importlib.import_module(f'configs.databases.tables_config'), f'{tgt_transport_api_table}')
-    # tgt_transport_table_parser = getattr(importlib.import_module(f'configs.{transport_operator}.parser') ,f'{tgt_transport_api_table}')
-    # tgt_transport_table_config = dbc.TableInfo(*tgt_transport_table_meta, tgt_transport_table_parser)
-    #
-    # tgt_weather_table_meta = getattr(importlib.import_module(f'configs.databases.tables_config'), f'{tgt_weather_api_table}')
-    # tgt_weather_table_parser = getattr(importlib.import_module(f'configs.{transport_operator}.parser') ,f'{tgt_weather_api_table}')
-    # tgt_weather_table_config = dbc.TableInfo(*tgt_weather_table_meta, tgt_weather_table_parser)
-    #
-    # tgt_maps_table_meta = getattr(importlib.import_module(f'configs.databases.tables_config'), f'{tgt_maps_table}')
-    # tgt_maps_table_parser = getattr(importlib.import_module(f'configs.{transport_operator}.parser') ,f'{tgt_maps_table}')
-    # tgt_maps_table_config = dbc.TableInfo(*tgt_maps_table_meta, tgt_maps_table_parser)
 
 except Exception as e:
     logger.error(f'Initing configs failed with {e}', exc_info=True)
     print(f'Initing configs failed with {e}')
     sys.exit()
 
-# #init clients objects
-# transport_api_client = api.LiveDataClient(kp, transport_operator, transport_api_config)
-# transport_api_table_client = db_clients.DatabaseObjectClient(kp, tgt_database, db_config, tgt_transport_table_config)
-# weather_api_client = api.LiveDataClient(kp, weather_provider, weather_api_config)
-# weather_api_table_client = db_clients.DatabaseObjectClient(kp, tgt_database, db_config, tgt_weather_table_config)
-# maps_client = screen_analyzer.ScreenAnalyzer(selenium_config, screen_analyzer_config)
-# maps_table_client  = db_clients.DatabaseObjectClient(kp, tgt_database, db_config, tgt_maps_table_config)
 
-################################# PROGRAM EXECUTION #todo create separate file for continous functions
 #transport data
 def transport_data_get_continously():
     try:
