@@ -5,4 +5,3 @@ Pillow
 requests
 logging
 datetime
-importlib
