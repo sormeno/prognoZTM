@@ -25,9 +25,9 @@ tgt_transport_api_table = 'pz1000bus_tram'
 tgt_weather_api_table = 'pz2000actual_weather'
 tgt_maps_table = 'pz3000traffic_data'
 
-transport_data_get_interval = 30
-weather_data_get_interval = 30
-traffic_data_get_interval = 30
+# transport_data_get_interval = 30
+# weather_data_get_interval = 30
+# traffic_data_get_interval = 30
 
 #Transport api params
 transport_api_params = [
