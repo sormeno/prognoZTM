@@ -6,4 +6,3 @@ requests
 logging
 datetime
 importlib
-enum
