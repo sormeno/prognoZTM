@@ -1,13 +1,16 @@
 import libs.lib_credentials.credentials as cred
 import db_backup.db_backup_config as cfg
+
 import os
 import logging
+from datetime import datetime
 logging.basicConfig(
     format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
     datefmt='%d-%m-%Y %H:%M:%S',
     level=logging.INFO,
     filename='C:\\Users\\filip\\OneDrive\\Dokumenty\\Programowanie\\Python Projects\\PrognoZTM\\db_backup\\logs.txt'
     )
+
 dbdump_logger = logging.getLogger('DBdump')
 dbdump_logger.info('Started DBdump!')
 
@@ -18,11 +21,14 @@ dbdump_logger.info(f'DDLs will be saved to {cfg.target_dir}')
 
 kp = cred.JSONpassDB(cred_path = cfg.creds)
 user, pwd = kp.get_credential('MYSQL_DUMP')
+git_user, git_pwd = kp.get_credential('GIT')
 
 cmds = [
     f'{cfg.mysqldump_path} -d -u {user} -p{pwd} -h localhost -B {cfg.schemas_for_backup} > {cfg.DDL_path}',
     f'{cfg.mysqldump_path} --no-create-info -d -u {user} -p{pwd} -h localhost -B mysql --tables db user columns_priv tables_priv procs_priv > {cfg.users_path}',
-
+    f'git add DDL',
+    f'git commit -m \"dbdump {datetime.now()}\"',
+    f'git push https://{git_user}:{git_pwd}@github.com/sormeno/prognoZTM'
 ]
 
 for cmd in cmds:
