@@ -1,0 +1,4 @@
+pykeepass
+pyodbc
+selenium
+Pillow
