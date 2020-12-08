@@ -4,11 +4,6 @@ selenium
 Pillow
 requests
 logging
-time
-sys
 datetime
 importlib
-json
 enum
-io
-base64
