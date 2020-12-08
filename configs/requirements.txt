@@ -3,5 +3,3 @@ pyodbc
 selenium
 Pillow
 requests
-logging
-datetime
