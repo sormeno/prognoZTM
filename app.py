@@ -8,6 +8,7 @@ logging.basicConfig(
 logger = logging.getLogger('PrognoZTM')
 logger.info('Started logging!')
 
+
 import time
 import sys
 from datetime import datetime
