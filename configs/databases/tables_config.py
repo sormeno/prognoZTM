@@ -1,6 +1,6 @@
 #tables
 pz1000bus_tram = (
-    "prognoztm_stage",
+    "baza22697_prognoztm_stage",
     "pz1000bus_tram",
     [
         'LINE',
@@ -14,7 +14,7 @@ pz1000bus_tram = (
 )
 
 pz2000actual_weather = (
-    "prognoztm_stage",
+    "baza22697_prognoztm_stage",
     "pz2000actual_weather",
     [
         'LATITUDE',
@@ -35,7 +35,7 @@ pz2000actual_weather = (
 
 
 pz3000traffic_data = (
-    "prognoztm_stage",
+    "baza22697_prognoztm_stage",
     "pz3000traffic_data",
     [
         'TIMESTAMP',

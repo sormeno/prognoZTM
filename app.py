@@ -3,7 +3,7 @@ logging.basicConfig(
     format='%(asctime)s %(levelname)-8s [%(filename)s:%(lineno)d] %(message)s',
     datefmt='%d-%m-%Y %H:%M:%S',
     level=logging.INFO,
-    filename='PrognoZTM/logs.txt'
+    filename='prognoZTM/logs.txt'
     )
 logger = logging.getLogger('PrognoZTM')
 logger.info('Started logging!')
