@@ -3,5 +3,5 @@ selenium_config ={
         "--headless",
         "--window-size=3840x2160"
     ],
-    'browser_driver': 'C:\\chromedriver\\chromedriver.exe'
+    'browser_driver': 'chromedriver/chromedriver'
 }

@@ -9,8 +9,8 @@ class Titles:
 
 
 class KPpath:
-    PATH = 'libs\\lib_credentials\\PrognoZTM_v2.kdbx'
+    PATH = 'prognoZTM/libs/lib_credentials/PrognoZTM_v2.kdbx'
 
 class JSONpasspath:
-    PATH = 'libs\\lib_credentials\\access.json'
+    PATH = 'prognoZTM/libs/lib_credentials/access.json'
 

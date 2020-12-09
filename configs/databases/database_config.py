@@ -8,3 +8,5 @@ MYSQL_DB = dbc.ServerInfo(
     dbc.ServerType.MYSQL
 )
 
+#
+BADFILE_DIR = 'prognoZTM/utils/badfiles/'

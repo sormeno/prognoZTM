@@ -2,6 +2,7 @@ import logging
 import pyodbc
 import sys
 from libs.lib_database import dbConnections as dbc
+from configs.databases.database_config import BADFILE_DIR
 logger = logging.getLogger('PrognoZTM.database_operations')
 
 class DatabaseObjectClient:
@@ -51,7 +52,7 @@ class DatabaseObjectClient:
             print(f'Error when trying insert to {self.database}.{self.table_name}. Data saved to badfile {self.database}_{self.table_name}_badfile.txt')
             self.DBClient.conn.rollback()
             logger.debug(f'ROLLBACK done')
-            with open(f'utils\\badfiles\\{self.database}_{self.table_name}_badfile.txt','a') as badfile:
+            with open(f'{BADFILE_DIR}{self.database}_{self.table_name}_badfile.txt','a') as badfile:
                 badfile.write(';'.join(str(cell) for cell in data)+'\n')
             logger.info(f'Unsaved data loaded to badfile {self.database}_{self.table_name}_badfile.txt \n')
 
@@ -87,7 +88,7 @@ class DatabaseObjectClient:
             print(f'Error when trying insert to {self.database}.{self.table_name}. Saving data to badfile {self.database}_{self.table_name}_badfile.txt')
             self.DBClient.conn.rollback()
             logger.debug(f'ROLLBACK done')
-            with open(f'utils\\badfiles\\{self.database}_{self.table_name}_badfile.txt','a') as badfile:
+            with open(f'{BADFILE_DIR}{self.database}_{self.table_name}_badfile.txt','a') as badfile:
                 for elem in data:
                     badfile.write(';'.join(str(cell) for cell in elem)+'\n')
             logger.info(f'Rejected data saved to badfile {self.database}_{self.table_name}_badfile.txt')
